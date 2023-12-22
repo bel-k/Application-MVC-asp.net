@@ -1,0 +1,88 @@
+﻿@model IEnumerable<Product>
+
+@{
+    ViewData["Title"] = "List of Products";
+}
+
+
+ 
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 col-xs-6 border-primary mb-3">
+            <div class="card mb-3  h-100" style="max-width: 540px;">
+                <div class="row g-0">
+                    <div class="col-md-12">
+                        <div class="card-header text-white bg-primary">
+                            <p class="card-text">
+                                <h5 class="card-title">
+                                    @item.Title
+                                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                                    {
+                                        <a class="text-white float-right" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil-square"></i></a>
+                                    }
+                                </h5>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 h-75">
+                        <img src="@item.ImageUrl" width="100%" alt="@item.Title">
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-body  h-75">
+                            <p class="card-text">@item.Description</p>
+                           @*  <p class="card-text"><b>Supplier: </b>@item.Supplier.Name</p> *@
+                            @* <p class="card-text"><b>Category: </b>@item.Category.Title</p> *@
+                            <p class="card-text"><b>Date: </b>@item.createdAt.ToString("dd MMM yy")</p>
+                            @* <p class="card-text"><b>End Date: </b>@item.EndDate.ToString("dd MMM yy")</p> *@
+                            @* <p class="card-text ">
+                                <b>Status: </b>
+                                @if (DateTime.Now >= item.StartDate && DateTime.Now <= item.EndDate)
+                                {
+                                    <span class="badge bg-success text-white">AVAILABLE</span>
+                                }
+                                else if (DateTime.Now > item.EndDate)
+                                {
+                                    <span class="badge bg-danger text-white">EXPIRED</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-primary text-white">UPCOMING</span>
+                                }
+                            </p> *@
+
+                        </div>
+                    </div>
+                    <div class="col-md-12 ">
+                        <div class="card-footer mt-auto  ">
+                            <p class="card-text ">
+                                <a class="btn btn-outline-primary float-right" asp-action="Details" asp-route-id="@item.Id">
+                                    <i class="bi bi-ticket-detailed"></i> Show Details
+                                </a>
+                                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                                {
+                                    <a class="btn btn-info text-white"
+                                    asp-controller="Products"
+                                    asp-action="Details"
+                                    asp-route-id="@item.Id">
+                                        <i class="bi bi-ticket-detailed"></i> Details
+                                    </a>
+                                }
+                                else
+                                {
+                                    <a class="btn btn-info text-white"
+                                       asp-controller="Orders"
+                                       asp-action="AddItemToShoppingCart"
+                                       asp-route-id="@item.Id">
+                                        <i class="bi bi-cart-plus"></i> Add to Cart (Price @item.Price.ToString("c"))
+                                    </a>
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+@await Html.PartialAsync("_CreateItem", "Products") 
